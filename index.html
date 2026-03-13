@@ -2,15 +2,16 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>COMPRESSION.md — AI Agent Context Compression Protocol</title>
-  <meta name="description" content="COMPRESSION.md is an open file convention for AI agent context compression. Define summarization rules, preservation priorities, compression ratios, and post-compression coherence checks.">
+  <meta name="description" content="COMPRESSION.md: AI context compression protocol. Define summarization rules, preserve priorities, set compression ratios, verify coherence post-compression.">
   <meta name="keywords" content="AI context compression, COMPRESSION.md, context window management, AI summarization, token budget management, AI agent context, AI safety">
   <link rel="canonical" href="https://compression.md/">
 
   <!-- Open Graph -->
   <meta property="og:title" content="COMPRESSION.md — AI Agent Context Compression Protocol">
-  <meta property="og:description" content="An open file convention for AI agent context compression. Define summarization rules, preservation priorities, compression ratios, and post-compression coherence checks.">
+  <meta property="og:description" content="COMPRESSION.md: AI context compression protocol. Define summarization rules, preserve priorities, set compression ratios, verify coherence post-compression.">
   <meta property="og:url" content="https://compression.md/">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
@@ -34,7 +35,7 @@
     "email": "info@compression.md",
     "description": "COMPRESSION.md is an open file convention for AI agent context compression. Defines TRIGGERS (context approaching limit at 75%), STRATEGY (preserve system prompt and recent turns, compress brainstorming), VERIFICATION (post-compression coherence check), and AUDIT logging.",
     "knowsAbout": ["AI context compression", "context window management", "AI summarization", "token budget management", "COMPRESSION.md specification"],
-    "sameAs": ["https://github.com/compression-md/spec", "https://killswitch.md", "https://throttle.md", "https://escalate.md", "https://failsafe.md", "https://terminate.md", "https://encrypt.md", "https://encryption.md", "https://sycophancy.md", "https://collapse.md", "https://failure.md", "https://leaderboard.md"]
+    "sameAs": ["https://killswitch.md", "https://throttle.md", "https://escalate.md", "https://failsafe.md", "https://terminate.md", "https://encrypt.md", "https://encryption.md", "https://sycophancy.md", "https://compression.md", "https://collapse.md", "https://failure.md", "https://leaderboard.md", "https://github.com/Compression-md/spec"]
   }
   </script>
 
@@ -853,6 +854,7 @@
     </ul>
   </nav>
 
+  <main>
   <!-- HERO -->
   <section class="hero">
     <div class="hero-grid">
@@ -933,6 +935,7 @@
     </div>
   </div>
 
+  <article>
   <!-- WHAT IS -->
   <section class="section" id="what">
     <div class="section-inner">
@@ -943,21 +946,21 @@
           <p>
             <strong>COMPRESSION.md is a plain-text Markdown file</strong> you place in the root of any AI agent repository. It defines the rules for compressing context when token limits approach — what to keep, what to summarize, what to discard, and how to verify the result.
           </p>
-          <h3>The problem it solves</h3>
+          <h3>What problem does COMPRESSION.md solve?</h3>
           <p>
             Long-running AI agents fill their context window with conversation history, tool outputs, and intermediate reasoning. As the window fills, the agent loses access to earlier instructions, forgets decisions made earlier in the session, and degrades in quality. Without compression rules, this is either handled ad-hoc (unreliably) or not at all.
           </p>
-          <h3>How it works</h3>
+          <h3>How does COMPRESSION.md work?</h3>
           <p>
             Drop <code style="font-family: var(--mono); font-size:13px; color: var(--green); background: var(--surface); padding: 2px 6px; border-radius: 3px;">COMPRESSION.md</code> in your repo root and define: when to compress (75% context utilisation or token budget exceeded), what always to preserve (system prompt, active task, last 3 turns), what to compress aggressively (brainstorming, redundant information), and what to discard (completed work, redundant acknowledgements). After compression, a coherence check verifies no critical information was lost.
           </p>
-          <h3>The regulatory context</h3>
+          <h3>What regulations require COMPRESSION.md?</h3>
           <p>
             The EU AI Act (effective 2 August 2026) requires AI systems to maintain consistent and reliable behaviour. COMPRESSION.md provides the documented context management controls that long-session reliability requires.
           </p>
         </div>
         <div class="prose">
-          <h3>How to use it</h3>
+          <h3>How do I add COMPRESSION.md to my project?</h3>
           <p>Copy the template from <a href="https://github.com/Compression-md/spec" style="color: var(--teal); text-decoration: none; border-bottom: 1px solid rgba(0,191,165,0.3);">GitHub</a> and place it in your project root:</p>
           <div style="background: var(--surface); border: 1px solid var(--border-bright); border-radius: 6px; padding: 20px; margin: 16px 0; font-family: var(--mono); font-size: 12px; line-height: 1.8; color: var(--text-dim);">
             <span style="color: var(--text-dimmer);">your-project/</span><br>
@@ -967,11 +970,11 @@
             <span style="color: var(--text-dimmer);">├── README.md</span><br>
             <span style="color: var(--text-dimmer);">└── src/</span>
           </div>
-          <h3>What it replaces</h3>
+          <h3>What did teams use before COMPRESSION.md?</h3>
           <p>
             Before COMPRESSION.md, context compression was either absent (agent silently degraded), hardcoded in the system prompt, or handled by ad-hoc logic no one documented. COMPRESSION.md makes context management <strong>version-controlled, auditable, and transparent.</strong>
           </p>
-          <h3>Who reads it</h3>
+          <h3>Who benefits from COMPRESSION.md?</h3>
           <p>
             The AI agent reads it on startup. Your engineer reads it during code review. Your compliance team reads it during audits. Your regulator reads it if something goes wrong. One file serves all four audiences.
           </p>
@@ -1130,6 +1133,8 @@
       <div class="last-updated-date">13 March 2026</div>
     </div>
   </div>
+  </article>
+  </main>
 
   <!-- FOOTER -->
   <footer>
@@ -1138,6 +1143,7 @@
       <li><a href="https://github.com/Compression-md/spec" target="_blank" rel="noopener">GitHub</a></li>
       <li><a href="/llms.txt">llms.txt</a></li>
       <li><a href="/knowledge">Knowledge</a></li>
+      <li><a href="/privacy">Privacy</a></li>
       <li><a href="mailto:info@compression.md">Contact</a></li>
     </ul>
     <div class="footer-note">Open standard · MIT licence · v1.0 · 2026</div>
