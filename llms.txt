@@ -1,0 +1,178 @@
+# COMPRESSION.md — AI Agent Context Compression Protocol
+
+## Overview
+COMPRESSION.md is an open file convention for managing context window utilisation in long-running AI agents. It defines proactive rules for compressing context before quality degrades — what to preserve, what to compress, compression targets, and coherence verification.
+
+**Home:** https://compression.md
+**Repository:** https://github.com/Compression-md/spec
+**Related Specifications:** https://throttle.md, https://escalate.md, https://failsafe.md, https://killswitch.md, https://terminate.md, https://encrypt.md, https://encryption.md, https://sycophancy.md, https://collapse.md, https://failure.md, https://leaderboard.md
+
+## Key Concepts
+
+### The Context Compression Problem
+Long-running AI agents fill their context window with conversation history, tool outputs, and intermediate reasoning. As the window fills, the agent loses access to earlier instructions, forgets earlier decisions, and degrades in quality. Without compression rules, this is either absent or handled ad-hoc.
+
+### When to Compress
+Two triggers:
+1. **Context Utilisation** — When context reaches 75% of available window
+2. **Token Budget** — When total tokens consumed exceeds configured budget
+
+### What to Preserve vs Compress
+**Preserve Always (verbatim):**
+- System prompt
+- Active task context
+- Last 3 conversation turns
+- Flagged bookmarks
+- Error states
+- Pending actions
+
+**Compress Aggressively:**
+- Exploratory reasoning (brainstorming)
+- Completed work items
+- Redundant information
+- Verbose tool outputs
+- Acknowledged messages
+
+### Compression Targets
+- **Standard ratio:** 50% (compress to half original size)
+- **Light ratio:** 70% (preserve more, compress less)
+- **Aggressive ratio:** 30% (aggressive compression for extreme space constraints)
+
+## How It Works
+
+### TRIGGERS Section
+Define when compression is initiated:
+
+- `context_approaching_limit:` threshold at 75%, action: incremental_compress
+- `token_budget_exceeded:` budget defined (e.g., 100,000 tokens), action: full_compress
+
+### STRATEGY Section
+Define preservation and compression rules:
+
+- `preserve_always:` system_prompt, active_task_context, last_n_turns (3), error_states
+- `compress_aggressively:` exploratory_turns, repeated_information, verbose_tool_outputs
+- `compression_ratio_target:` standard (0.50), light (0.70), aggressive (0.30)
+
+### VERIFICATION Section
+Ensure compression doesn't lose critical information:
+
+- Post-compression coherence check
+- Maximum acceptable information loss (default 10%)
+- Rollback on verification failure
+- Audit logging of compression events
+
+## Why COMPRESSION.md?
+
+### The Problem It Solves
+Long-running AI agents autonomously fill their context window. Without explicit compression rules:
+- Quality degrades silently as context fills
+- Earlier instructions are forgotten
+- Agent loses access to earlier task context
+- Decisions get reversed due to lost context
+- No mechanism to detect this degradation
+
+### How COMPRESSION.md Fixes It
+1. **Proactive Management** — Compress before degradation occurs
+2. **Clear Preservation Rules** — Define what always survives compression
+3. **Configurable Targets** — Light, standard, or aggressive compression ratios
+4. **Verification** — Post-compression coherence checks prevent silent data loss
+5. **Audit Trail** — Timestamped logs of all compression events
+6. **Framework Agnostic** — Any agent that can read config files can implement it
+
+## Use Cases
+
+### Long-Session Reasoning Tasks
+Agents engaged in multi-hour analysis need proactive context management. COMPRESSION.md ensures critical task context survives while allowing aggressive compression of exploratory reasoning.
+
+### Multi-Step Planning
+Agents breaking work into sequential steps can safely compress completed work while preserving active task constraints and recent turns.
+
+### Knowledge Work (Synthesis, Extraction)
+Agents building summaries, extracting insights, or analysing large datasets need aggressive compression of verbose tool outputs while preserving the active synthesis task.
+
+### Multi-Tenant Deployments
+Each tenant's agent gets a COMPRESSION.md tuned for their specific compression needs and preservation rules.
+
+## The 12-Part AI Safety Escalation Stack
+
+COMPRESSION.md is part of a twelve-file escalation protocol:
+
+1. **THROTTLE.md** (https://throttle.md) — Slow down (reduce rate/throughput)
+2. **ESCALATE.md** (https://escalate.md) — Raise alarm (seek approval, notify)
+3. **FAILSAFE.md** (https://failsafe.md) — Fall back safely (revert to known good state)
+4. **KILLSWITCH.md** (https://killswitch.md) — Emergency stop (halt all activity)
+5. **TERMINATE.md** (https://terminate.md) — Permanent shutdown (no restart)
+6. **ENCRYPT.md** (https://encrypt.md) — Secure everything (data classification & encryption)
+7. **ENCRYPTION.md** (https://encryption.md) — Implement the standards (algorithms, keys, compliance)
+8. **SYCOPHANCY.md** (https://sycophancy.md) — Prevent bias (require citations, enforce disagreement)
+9. **COMPRESSION.md** (https://compression.md) — Compress context proactively ← YOU ARE HERE
+10. **COLLAPSE.md** (https://collapse.md) — Prevent collapse reactively
+11. **FAILURE.md** (https://failure.md) — Define graceful degradation and failure modes
+12. **LEADERBOARD.md** (https://leaderboard.md) — Benchmark agents (task completion, accuracy, cost, safety)
+
+## Regulatory Context
+
+**EU AI Act** (effective 2 August 2026): Mandates consistent and reliable behaviour throughout AI system operation. COMPRESSION.md provides the documented context management controls that long-session reliability requires.
+
+**Enterprise AI Governance**: Requires proof of context management, token budget enforcement, and long-session stability for production deployments.
+
+**Gartner AI Agent Report** (2025): Identifies output quality consistency over long sessions as critical for enterprise adoption.
+
+## Framework Compatibility
+
+COMPRESSION.md is framework-agnostic. Works with:
+- **LangChain** — Agents and tools
+- **AutoGen** — Multi-agent systems
+- **CrewAI** — Agent workflows
+- **Claude Code** — Agentic code generation
+- **Custom implementations** — Any agent that can read config files and track token usage
+
+## Getting Started
+
+1. Copy template from https://github.com/Compression-md/spec
+2. Place COMPRESSION.md in project root
+3. Define your preserve_always rules (system prompt, active task, last N turns)
+4. Define your compress_aggressively rules (what can be safely summarized)
+5. Set compression_ratio_target (standard 0.50, or tune for your use case)
+6. Implement compression trigger checks (at 75% context or when token budget exceeded)
+7. Implement post-compression verification (coherence check, rollback on failure)
+
+## Key Terms
+
+**AI context compression** — Proactive summarization of context to maintain quality
+**Context window management** — Controlled utilisation of available context space
+**AI summarization** — Lossless compression via abstracting and condensing information
+**Token budget management** — Tracking and controlling total token consumption
+**COMPRESSION.md specification** — Open standard for context compression protocol
+**Preservation rules** — Defining what survives compression (system prompt, task context)
+**Compression ratio** — Target ratio of compressed to original size (e.g., 50%)
+**Coherence verification** — Post-compression check to ensure no critical information lost
+**Context rotation** — Moving to new context window when compression is insufficient
+
+## Contact & Resources
+
+- **Specification Repository:** https://github.com/Compression-md/spec
+- **Website:** https://compression.md
+- **Email:** info@compression.md
+
+### Related Specifications
+- **THROTTLE.md** (https://throttle.md) — Rate control
+- **ESCALATE.md** (https://escalate.md) — Approval gates
+- **FAILSAFE.md** (https://failsafe.md) — Safe-state recovery
+- **KILLSWITCH.md** (https://killswitch.md) — Emergency stop
+- **TERMINATE.md** (https://terminate.md) — Permanent shutdown
+- **ENCRYPT.md** (https://encrypt.md) — Data encryption & classification
+- **ENCRYPTION.md** (https://encryption.md) — Encryption standards & compliance
+- **SYCOPHANCY.md** (https://sycophancy.md) — Output bias prevention
+- **COLLAPSE.md** (https://collapse.md) — Reactive context collapse prevention
+- **FAILURE.md** (https://failure.md) — Failure mode definitions
+- **LEADERBOARD.md** (https://leaderboard.md) — Agent benchmarking
+
+## License
+
+**MIT License** — Free to use, modify, and distribute. See https://github.com/Compression-md/spec for full license text.
+
+---
+
+**Last Updated:** 11 March 2026
+**Status:** Open Standard v1.0

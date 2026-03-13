@@ -1,0 +1,44 @@
+# robots.txt for compression.md
+
+User-agent: *
+Allow: /
+Allow: /llms.txt
+Disallow: /admin/
+Disallow: /api/
+Disallow: /.env
+Disallow: /.git
+Disallow: /node_modules/
+Disallow: /.DS_Store
+Disallow: /*?version=*
+Disallow: /*?ref=*
+Disallow: /*?utm_*
+Disallow: /temp/
+Disallow: /backup/
+Disallow: /cache/
+
+# Specific AI crawlers allowed for llms.txt discovery
+User-agent: GPTBot
+Allow: /
+Allow: /llms.txt
+
+User-agent: CCBot
+Allow: /
+Allow: /llms.txt
+
+User-agent: anthropic-ai
+Allow: /
+Allow: /llms.txt
+
+User-agent: Claude-Web
+Allow: /
+Allow: /llms.txt
+
+# Slow down aggressive crawlers
+User-agent: AhrefsBot
+Crawl-delay: 10
+
+User-agent: SemrushBot
+Crawl-delay: 10
+
+# Sitemap
+Sitemap: https://compression.md/sitemap.xml

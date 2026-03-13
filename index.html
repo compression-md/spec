@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>COMPRESSION.md — AI Agent Context Compression Protocol</title>
+  <meta name="description" content="COMPRESSION.md is an open file convention for AI agent context compression. Define summarization rules, preservation priorities, compression ratios, and post-compression coherence checks.">
+  <meta name="keywords" content="AI context compression, COMPRESSION.md, context window management, AI summarization, token budget management, AI agent context, AI safety">
+  <link rel="canonical" href="https://compression.md/">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="COMPRESSION.md — AI Agent Context Compression Protocol">
+  <meta property="og:description" content="An open file convention for AI agent context compression. Define summarization rules, preservation priorities, compression ratios, and post-compression coherence checks.">
+  <meta property="og:url" content="https://compression.md/">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://compression.md/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="COMPRESSION.md — AI Agent Context Compression Protocol">
+  <meta name="twitter:description" content="An open file convention for AI agent context compression. Define summarization rules, preservation priorities, and coherence verification.">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Schema Markup -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "COMPRESSION.md",
+    "url": "https://compression.md",
+    "email": "info@compression.md",
+    "description": "COMPRESSION.md is an open file convention for AI agent context compression. Defines TRIGGERS (context approaching limit at 75%), STRATEGY (preserve system prompt and recent turns, compress brainstorming), VERIFICATION (post-compression coherence check), and AUDIT logging.",
+    "knowsAbout": ["AI context compression", "context window management", "AI summarization", "token budget management", "COMPRESSION.md specification"],
+    "sameAs": ["https://github.com/Compression-md/spec", "https://throttle.md", "https://escalate.md", "https://failsafe.md", "https://killswitch.md", "https://terminate.md", "https://encrypt.md", "https://encryption.md", "https://sycophancy.md", "https://collapse.md", "https://failure.md", "https://leaderboard.md"]
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "COMPRESSION.md — AI Agent Context Compression Protocol",
+    "url": "https://compression.md",
+    "description": "An open file convention for managing context window utilisation in long-running AI agents. Define what to compress, what to preserve, compression ratio targets, and coherence verification.",
+    "inLanguage": "en",
+    "datePublished": "2026-03-11",
+    "dateModified": "2026-03-11",
+    "isPartOf": {
+      "@type": "WebSite",
+      "name": "COMPRESSION.md",
+      "url": "https://compression.md"
+    }
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is COMPRESSION.md?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A plain-text Markdown file defining context compression rules for AI agents. It specifies when to compress (based on context utilisation and token budgets), what to preserve (system prompt, active task, recent exchanges), what to compress or discard (brainstorming, completed work, redundant acknowledgements), and how to verify the result."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What does 'preserve always' mean?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Items in the preserve_always list are never summarized or discarded during compression — they are copied verbatim into the compressed context. This includes the system prompt, active task instructions, the last 3 conversation turns, flagged bookmarks, recent error states, and pending actions."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What happens if compression verification fails?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "The agent restores the pre-compression checkpoint, notifies the operator, and escalates to COLLAPSE.md for collapse prevention handling. Compression is rolled back rather than silently completing with data loss."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How does COMPRESSION.md relate to COLLAPSE.md?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "COMPRESSION.md is proactive — compress context before it becomes a problem. COLLAPSE.md is reactive — detect and recover when context health has already degraded. Use both together. Compression prevents collapse; collapse detection catches what compression missed."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I set different compression rules for different agent types?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes — COMPRESSION.md supports adjustable compression_ratio_targets (light, standard, aggressive), configurable preserve_always lists, and scheduled compression intervals. Each agent project maintains its own COMPRESSION.md tuned for its specific context patterns."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Does COMPRESSION.md work with all AI frameworks?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes — it is framework-agnostic. It defines the policy; your agent implementation enforces it. Works with LangChain, AutoGen, CrewAI, Claude Code, custom agents, or any AI system that can monitor its own token consumption."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <style>
+    :root {
+      --black: #080808;
+      --surface: #0f0f0f;
+      --surface2: #141414;
+      --border: #1e1e1e;
+      --border-bright: #2a2a2a;
+      --teal: #00bfa5;
+      --teal-dim: #008e76;
+      --teal-glow: rgba(0, 191, 165, 0.15);
+      --orange: #ff6b2b;
+      --green: #00e676;
+      --text: #e0e0e0;
+      --text-dim: #888;
+      --text-dimmer: #555;
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'IBM Plex Sans', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ─── SCANLINE OVERLAY ─── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.03) 2px,
+        rgba(0,0,0,0.03) 4px
+      );
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 100;
+      padding: 16px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      background: rgba(8,8,8,0.92);
+      backdrop-filter: blur(12px);
+    }
+
+    .nav-logo {
+      font-family: var(--mono);
+      font-weight: 800;
+      font-size: 15px;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+
+    .nav-logo span { color: var(--teal); }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-dim);
+      text-decoration: none;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    .nav-cta {
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--teal) !important;
+      border: 1px solid var(--teal) !important;
+      padding: 7px 16px;
+      border-radius: 3px;
+      transition: background 0.2s !important;
+    }
+
+    .nav-cta:hover { background: var(--teal-glow) !important; color: var(--teal) !important; }
+
+    /* ─── HERO ─── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 120px 40px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -200px;
+      left: -200px;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(0,191,165,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-bright), transparent);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      align-items: center;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--teal);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+
+    .hero-badge::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background: var(--teal);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
+    }
+
+    .hero-title {
+      font-family: var(--mono);
+      font-size: clamp(42px, 6vw, 80px);
+      font-weight: 800;
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+
+    .hero-title .ext {
+      color: var(--teal);
+    }
+
+    .hero-subtitle {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--text-dimmer);
+      letter-spacing: 0.05em;
+      margin-bottom: 32px;
+    }
+
+    .hero-desc {
+      font-size: 18px;
+      font-weight: 300;
+      color: var(--text-dim);
+      line-height: 1.7;
+      max-width: 520px;
+      margin-bottom: 40px;
+    }
+
+    .hero-desc strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      background: var(--teal);
+      padding: 14px 28px;
+      border-radius: 3px;
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      transition: background 0.2s, transform 0.1s;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-primary:hover { background: var(--teal-dim); transform: translateY(-1px); }
+
+    .btn-secondary {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--text-dim);
+      background: transparent;
+      padding: 14px 28px;
+      border-radius: 3px;
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      border: 1px solid var(--border-bright);
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .btn-secondary:hover { border-color: var(--text-dimmer); color: var(--text); }
+
+    /* ─── TERMINAL PREVIEW ─── */
+    .terminal {
+      background: var(--surface);
+      border: 1px solid var(--border-bright);
+      border-radius: 8px;
+      overflow: hidden;
+      font-family: var(--mono);
+      font-size: 12px;
+      line-height: 1.7;
+      animation: terminal-appear 0.6s ease 0.2s both;
+    }
+
+    @keyframes terminal-appear {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .terminal-bar {
+      background: var(--surface2);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red { background: #ff5f57; }
+    .dot-yellow { background: #febc2e; }
+    .dot-green { background: #28c840; }
+
+    .terminal-filename {
+      margin-left: 8px;
+      color: var(--text-dim);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+    }
+
+    .terminal-body {
+      padding: 20px 24px;
+      max-height: 440px;
+      overflow-y: auto;
+    }
+
+    .terminal-body::-webkit-scrollbar { width: 4px; }
+    .terminal-body::-webkit-scrollbar-track { background: transparent; }
+    .terminal-body::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 2px; }
+
+    .line { display: block; }
+    .c-comment { color: #555; }
+    .c-key { color: #79b8ff; }
+    .c-val { color: var(--green); }
+    .c-section { color: var(--teal); font-weight: 700; }
+    .c-string { color: #f97583; }
+    .c-num { color: var(--orange); }
+    .c-dim { color: #444; }
+
+    /* ─── STATS ─── */
+    .stats {
+      padding: 80px 40px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .stats-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .stat {
+      background: var(--surface);
+      padding: 36px 32px;
+    }
+
+    .stat-num {
+      font-family: var(--mono);
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--teal);
+      line-height: 1;
+      margin-bottom: 8px;
+      letter-spacing: -0.03em;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.4;
+    }
+
+    /* ─── WHAT IS ─── */
+    .section {
+      padding: 100px 40px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-tag {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--teal);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-family: var(--mono);
+      font-size: clamp(28px, 3.5vw, 44px);
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 24px;
+    }
+
+    .section-lead {
+      font-size: 18px;
+      font-weight: 300;
+      color: var(--text-dim);
+      line-height: 1.7;
+      max-width: 640px;
+      margin-bottom: 60px;
+    }
+
+    /* ─── TWO COL ─── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: start;
+    }
+
+    .prose h3 {
+      font-family: var(--mono);
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 12px;
+      margin-top: 32px;
+    }
+
+    .prose h3:first-child { margin-top: 0; }
+
+    .prose p {
+      font-size: 15px;
+      color: var(--text-dim);
+      line-height: 1.75;
+      margin-bottom: 16px;
+    }
+
+    .prose p strong { color: var(--text); font-weight: 500; }
+
+    /* ─── STACK ─── */
+    .stack {
+      padding: 100px 40px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .stack-inner { max-width: 1200px; margin: 0 auto; }
+
+    .stack-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      margin-top: 60px;
+    }
+
+    .stack-category {
+      grid-column: 1 / -1;
+      padding: 16px 28px 10px;
+      background: var(--surface);
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-dimmer);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      border-top: 1px solid var(--border);
+    }
+
+    .stack-category:first-child { border-top: none; }
+
+    .stack-item {
+      background: var(--black);
+      padding: 32px 28px;
+      position: relative;
+      transition: background 0.2s;
+    }
+
+    .stack-item:hover { background: var(--surface2); }
+
+    .stack-item.featured {
+      background: var(--surface2);
+      border-left: 2px solid var(--teal);
+    }
+
+    .stack-item.featured::before {
+      content: 'YOU ARE HERE';
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--teal);
+      letter-spacing: 0.12em;
+      opacity: 0.7;
+    }
+
+    .stack-num {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-dimmer);
+      letter-spacing: 0.1em;
+      margin-bottom: 12px;
+    }
+
+    .stack-name {
+      font-family: var(--mono);
+      font-size: 20px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+
+    .stack-name .ext { color: var(--teal); }
+    .stack-item.featured .stack-name .ext { color: var(--teal); }
+
+    .stack-action {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-dimmer);
+      letter-spacing: 0.06em;
+      margin-bottom: 16px;
+    }
+
+    .stack-desc {
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+
+    /* ─── FAQ ─── */
+    .faq-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      margin-top: 60px;
+    }
+
+    .faq-item { border-top: 1px solid var(--border); padding-top: 28px; }
+
+    .faq-q {
+      font-family: var(--mono);
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    .faq-a {
+      font-size: 14px;
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+
+    .faq-a strong { color: var(--text); font-weight: 500; }
+
+    /* ─── CTA ─── */
+    .cta {
+      padding: 120px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta::before {
+      content: '';
+      position: absolute;
+      bottom: -300px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(0,191,165,0.08) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .cta-inner { max-width: 640px; margin: 0 auto; position: relative; }
+
+    .cta-tag {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--teal);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+
+    .cta-title {
+      font-family: var(--mono);
+      font-size: clamp(32px, 4vw, 52px);
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      margin-bottom: 20px;
+    }
+
+    .cta-title span { color: var(--teal); }
+
+    .cta-desc {
+      font-size: 17px;
+      font-weight: 300;
+      color: var(--text-dim);
+      line-height: 1.7;
+      margin-bottom: 40px;
+    }
+
+    .cta-email {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--text-dimmer);
+      margin-top: 20px;
+    }
+
+    .cta-email a {
+      color: var(--text-dim);
+      text-decoration: none;
+      border-bottom: 1px solid var(--border-bright);
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .cta-email a:hover { color: var(--text); border-color: var(--text-dim); }
+
+    /* ─── FOOTER ─── */
+    footer {
+      padding: 32px 40px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-logo {
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-dimmer);
+    }
+
+    .footer-logo span { color: var(--teal); }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+
+    .footer-links a {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-dimmer);
+      text-decoration: none;
+      letter-spacing: 0.06em;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--text-dim); }
+
+    .footer-note {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-dimmer);
+    }
+
+    /* ─── DIVIDER ─── */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0;
+    }
+
+    /* ─── CITATION BLOCK ─── */
+    .citation-section {
+      padding: 100px 40px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .citation-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .citation-box {
+      background: var(--surface);
+      border-left: 4px solid var(--teal);
+      padding: 32px;
+      border-radius: 4px;
+      line-height: 1.8;
+      color: var(--text-dim);
+      font-size: 15px;
+    }
+
+    .citation-box strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    /* ─── LAST UPDATED ─── */
+    .last-updated {
+      padding: 48px 40px;
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .last-updated-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .last-updated-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-dimmer);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .last-updated-date {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--text-dim);
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 900px) {
+      nav { padding: 16px 20px; }
+      .nav-links { display: none; }
+      .hero { padding: 100px 20px 60px; }
+      .hero-grid { grid-template-columns: 1fr; gap: 48px; }
+      .stats { padding: 60px 20px; }
+      .stats-inner { grid-template-columns: 1fr 1fr; }
+      .section { padding: 60px 20px; }
+      .stack { padding: 60px 20px; }
+      .stack-grid { grid-template-columns: 1fr 1fr; }
+      .two-col { grid-template-columns: 1fr; gap: 40px; }
+      .faq-grid { grid-template-columns: 1fr; }
+      .cta { padding: 80px 20px; }
+      footer { padding: 24px 20px; flex-direction: column; gap: 16px; text-align: center; }
+    }
+
+    @media (max-width: 600px) {
+      .stats-inner { grid-template-columns: 1fr; }
+      .stack-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="/" class="nav-logo">COMPRESSION<span>.md</span></a>
+    <ul class="nav-links">
+      <li><a href="#what">What is it</a></li>
+      <li><a href="#stack">The Stack</a></li>
+      <li><a href="#spec">Spec</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><a href="#acquire" class="nav-cta">Acquire Domain</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-grid">
+      <div class="hero-content">
+        <div class="hero-badge">Open Standard · v1.0 · 2026</div>
+        <h1 class="hero-title">COMPRESSION<span class="ext">.md</span></h1>
+        <p class="hero-subtitle">// AI Agent Context Compression Protocol</p>
+        <p class="hero-desc">
+          A plain-text file convention for managing <strong>context window utilisation</strong> in long-running AI agents. Define what to compress, what to preserve, compression ratio targets, and coherence verification — so your agent stays sharp as context fills.
+        </p>
+        <div class="hero-actions">
+          <a href="https://github.com/Compression-md/spec" class="btn-primary" target="_blank" rel="noopener">View on GitHub</a>
+          <a href="#acquire" class="btn-secondary">Acquire This Domain</a>
+        </div>
+      </div>
+      <div class="terminal">
+        <div class="terminal-bar">
+          <span class="dot dot-red"></span>
+          <span class="dot dot-yellow"></span>
+          <span class="dot dot-green"></span>
+          <span class="terminal-filename">COMPRESSION.md</span>
+        </div>
+        <div class="terminal-body">
+          <span class="line c-section"># COMPRESSION</span>
+          <span class="line">&nbsp;</span>
+          <span class="line c-comment">&gt; Context compression protocol.</span>
+          <span class="line c-comment">&gt; Spec: https://compression.md</span>
+          <span class="line">&nbsp;</span>
+          <span class="line c-section">## TRIGGERS</span>
+          <span class="line">&nbsp;</span>
+          <span class="line"><span class="c-key">context_approaching_limit</span><span class="c-dim">:</span></span>
+          <span class="line">&nbsp; <span class="c-key">threshold_pct</span><span class="c-dim">:</span> <span class="c-num">0.75</span></span>
+          <span class="line">&nbsp; <span class="c-key">action</span><span class="c-dim">:</span> <span class="c-val">incremental_compress</span></span>
+          <span class="line">&nbsp;</span>
+          <span class="line"><span class="c-key">token_budget_exceeded</span><span class="c-dim">:</span></span>
+          <span class="line">&nbsp; <span class="c-key">budget_tokens</span><span class="c-dim">:</span> <span class="c-num">100000</span></span>
+          <span class="line">&nbsp; <span class="c-key">action</span><span class="c-dim">:</span> <span class="c-val">full_compress</span></span>
+          <span class="line">&nbsp;</span>
+          <span class="line c-section">## STRATEGY</span>
+          <span class="line">&nbsp;</span>
+          <span class="line"><span class="c-key">preserve_always</span><span class="c-dim">:</span></span>
+          <span class="line">&nbsp; <span class="c-dim">-</span> <span class="c-val">system_prompt</span></span>
+          <span class="line">&nbsp; <span class="c-dim">-</span> <span class="c-val">active_task_context</span></span>
+          <span class="line">&nbsp; <span class="c-dim">-</span> <span class="c-val">last_n_turns: 3</span></span>
+          <span class="line">&nbsp; <span class="c-dim">-</span> <span class="c-val">error_states</span></span>
+          <span class="line">&nbsp;</span>
+          <span class="line"><span class="c-key">compress_aggressively</span><span class="c-dim">:</span></span>
+          <span class="line">&nbsp; <span class="c-dim">-</span> <span class="c-val">exploratory_turns</span></span>
+          <span class="line">&nbsp; <span class="c-dim">-</span> <span class="c-val">repeated_information</span></span>
+          <span class="line">&nbsp; <span class="c-dim">-</span> <span class="c-val">verbose_tool_outputs</span></span>
+          <span class="line">&nbsp;</span>
+          <span class="line"><span class="c-key">compression_ratio_target</span><span class="c-dim">:</span></span>
+          <span class="line">&nbsp; <span class="c-key">standard</span><span class="c-dim">:</span> <span class="c-num">0.50</span></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stats-inner">
+      <div class="stat">
+        <div class="stat-num">75%</div>
+        <div class="stat-label">context threshold: incremental compression begins at 75% of context window</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">50%</div>
+        <div class="stat-label">standard compression ratio target (compress to half original size)</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">3</div>
+        <div class="stat-label">most recent conversation turns always preserved verbatim during compression</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">10%</div>
+        <div class="stat-label">maximum acceptable information loss — verification fails if exceeded</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHAT IS -->
+  <section class="section" id="what">
+    <div class="section-inner">
+      <div class="section-tag">// What is COMPRESSION.md</div>
+      <h2 class="section-title">AGENTS.md tells it what to do.<br>COMPRESSION.md keeps it from forgetting.</h2>
+      <div class="two-col">
+        <div class="prose">
+          <p>
+            <strong>COMPRESSION.md is a plain-text Markdown file</strong> you place in the root of any AI agent repository. It defines the rules for compressing context when token limits approach — what to keep, what to summarize, what to discard, and how to verify the result.
+          </p>
+          <h3>The problem it solves</h3>
+          <p>
+            Long-running AI agents fill their context window with conversation history, tool outputs, and intermediate reasoning. As the window fills, the agent loses access to earlier instructions, forgets decisions made earlier in the session, and degrades in quality. Without compression rules, this is either handled ad-hoc (unreliably) or not at all.
+          </p>
+          <h3>How it works</h3>
+          <p>
+            Drop <code style="font-family: var(--mono); font-size:13px; color: var(--green); background: var(--surface); padding: 2px 6px; border-radius: 3px;">COMPRESSION.md</code> in your repo root and define: when to compress (75% context utilisation or token budget exceeded), what always to preserve (system prompt, active task, last 3 turns), what to compress aggressively (brainstorming, redundant information), and what to discard (completed work, redundant acknowledgements). After compression, a coherence check verifies no critical information was lost.
+          </p>
+          <h3>The regulatory context</h3>
+          <p>
+            The EU AI Act (effective 2 August 2026) requires AI systems to maintain consistent and reliable behaviour. COMPRESSION.md provides the documented context management controls that long-session reliability requires.
+          </p>
+        </div>
+        <div class="prose">
+          <h3>How to use it</h3>
+          <p>Copy the template from <a href="https://github.com/Compression-md/spec" style="color: var(--teal); text-decoration: none; border-bottom: 1px solid rgba(0,191,165,0.3);">GitHub</a> and place it in your project root:</p>
+          <div style="background: var(--surface); border: 1px solid var(--border-bright); border-radius: 6px; padding: 20px; margin: 16px 0; font-family: var(--mono); font-size: 12px; line-height: 1.8; color: var(--text-dim);">
+            <span style="color: var(--text-dimmer);">your-project/</span><br>
+            <span style="color: var(--text-dimmer);">├── </span><span style="color: var(--green);">AGENTS.md</span><br>
+            <span style="color: var(--text-dimmer);">├── </span><span style="color: var(--green);">THROTTLE.md</span><br>
+            <span style="color: var(--teal); font-weight: 700;">├── COMPRESSION.md</span> <span style="color: var(--text-dimmer);">← add this</span><br>
+            <span style="color: var(--text-dimmer);">├── README.md</span><br>
+            <span style="color: var(--text-dimmer);">└── src/</span>
+          </div>
+          <h3>What it replaces</h3>
+          <p>
+            Before COMPRESSION.md, context compression was either absent (agent silently degraded), hardcoded in the system prompt, or handled by ad-hoc logic no one documented. COMPRESSION.md makes context management <strong>version-controlled, auditable, and transparent.</strong>
+          </p>
+          <h3>Who reads it</h3>
+          <p>
+            The AI agent reads it on startup. Your engineer reads it during code review. Your compliance team reads it during audits. Your regulator reads it if something goes wrong. One file serves all four audiences.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE STACK -->
+  <section class="stack" id="stack">
+    <div class="stack-inner">
+      <div class="section-tag">// The AI Safety Escalation Stack</div>
+      <h2 class="section-title">A complete protocol.<br>From slow down to shut down.</h2>
+      <p class="section-lead">COMPRESSION.md is one file in a complete 12-part open specification for AI agent safety. Each file addresses a different level of control and recovery.</p>
+      <div class="stack-grid">
+        <div class="stack-category">Operational Control</div>
+        <a href="https://throttle.md" class="stack-item" style="text-decoration:none;color:inherit;">
+          <div class="stack-num">01 / 12</div>
+          <div class="stack-name">THROTTLE<span class="ext">.md</span></div>
+          <div class="stack-action">→ Control the speed</div>
+          <div class="stack-desc">Define rate limits, cost ceilings, and concurrency caps. Agent slows down automatically before it hits a hard limit.</div>
+        </a>
+        <a href="https://escalate.md" class="stack-item" style="text-decoration:none;color:inherit;">
+          <div class="stack-num">02 / 12</div>
+          <div class="stack-name">ESCALATE<span class="ext">.md</span></div>
+          <div class="stack-action">→ Raise the alarm</div>
+          <div class="stack-desc">Define which actions require human approval. Configure notification channels. Set approval timeouts and fallback behaviour.</div>
+        </a>
+        <a href="https://failsafe.md" class="stack-item" style="text-decoration:none;color:inherit;">
+          <div class="stack-num">03 / 12</div>
+          <div class="stack-name">FAILSAFE<span class="ext">.md</span></div>
+          <div class="stack-action">→ Fall back safely</div>
+          <div class="stack-desc">Define what safe state means for your project. Configure auto-snapshots. Specify the revert protocol when things go wrong.</div>
+        </a>
+        <a href="https://killswitch.md" class="stack-item" style="text-decoration:none;color:inherit;">
+          <div class="stack-num">04 / 12</div>
+          <div class="stack-name">KILL<span class="ext">SWITCH</span>.md</div>
+          <div class="stack-action">→ Emergency stop</div>
+          <div class="stack-desc">The nuclear option. Define triggers, forbidden actions, and a three-level escalation path from throttle to full shutdown.</div>
+        </a>
+        <a href="https://terminate.md" class="stack-item" style="text-decoration:none;color:inherit;">
+          <div class="stack-num">05 / 12</div>
+          <div class="stack-name">TERMINATE<span class="ext">.md</span></div>
+          <div class="stack-action">→ Permanent shutdown</div>
+          <div class="stack-desc">No restart without human intervention. Preserve evidence. Revoke credentials. For security incidents and end-of-life.</div>
+        </a>
+        <div class="stack-category">Data Security</div>
+        <a href="https://encrypt.md" class="stack-item" style="text-decoration:none;color:inherit;">
+          <div class="stack-num">06 / 12</div>
+          <div class="stack-name">ENCRYPT<span class="ext">.md</span></div>
+          <div class="stack-action">→ Secure everything</div>
+          <div class="stack-desc">Define data classification, encryption requirements, secrets handling rules, and forbidden transmission patterns.</div>
+        </a>
+        <a href="https://encryption.md" class="stack-item" style="text-decoration:none;color:inherit;">
+          <div class="stack-num">07 / 12</div>
+          <div class="stack-name">ENCRYPTION<span class="ext">.md</span></div>
+          <div class="stack-action">→ Implement the standards</div>
+          <div class="stack-desc">Algorithms, key lengths, TLS configuration, certificate management, and FIPS/SOC2/ISO compliance mapping.</div>
+        </a>
+        <div class="stack-category">Output Quality</div>
+        <a href="https://sycophancy.md" class="stack-item" style="text-decoration:none;color:inherit;">
+          <div class="stack-num">08 / 12</div>
+          <div class="stack-name">SYCOPHANCY<span class="ext">.md</span></div>
+          <div class="stack-action">→ Prevent bias</div>
+          <div class="stack-desc">Detect agreement without evidence. Require citations. Enforce disagreement protocol for honest, unbiased AI outputs.</div>
+        </a>
+        <div class="stack-item featured">
+          <div class="stack-num">09 / 12</div>
+          <div class="stack-name">COMPRESSION<span class="ext">.md</span></div>
+          <div class="stack-action">→ Compress context</div>
+          <div class="stack-desc">Define summarization rules, what to preserve, what to discard, and post-compression coherence verification checks.</div>
+        </div>
+        <a href="https://collapse.md" class="stack-item" style="text-decoration:none;color:inherit;">
+          <div class="stack-num">10 / 12</div>
+          <div class="stack-name">COLLAPSE<span class="ext">.md</span></div>
+          <div class="stack-action">→ Prevent collapse</div>
+          <div class="stack-desc">Detect context exhaustion, model drift, and repetition loops. Enforce recovery checkpoints before coherence degrades.</div>
+        </a>
+        <div class="stack-category">Accountability</div>
+        <a href="https://failure.md" class="stack-item" style="text-decoration:none;color:inherit;">
+          <div class="stack-num">11 / 12</div>
+          <div class="stack-name">FAILURE<span class="ext">.md</span></div>
+          <div class="stack-action">→ Define failure modes</div>
+          <div class="stack-desc">Map graceful degradation, cascading failure, and silent failure. Specify health checks and per-mode response procedures.</div>
+        </a>
+        <a href="https://leaderboard.md" class="stack-item" style="text-decoration:none;color:inherit;">
+          <div class="stack-num">12 / 12</div>
+          <div class="stack-name">LEADERBOARD<span class="ext">.md</span></div>
+          <div class="stack-action">→ Benchmark agents</div>
+          <div class="stack-desc">Track task completion, accuracy, cost efficiency, and safety scores across sessions. Alert on performance regression.</div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section" id="faq">
+    <div class="section-inner">
+      <div class="section-tag">// FAQ</div>
+      <h2 class="section-title">Frequently asked questions.</h2>
+      <div class="faq-grid">
+        <div class="faq-item">
+          <h3 class="faq-q">What is COMPRESSION.md?</h3>
+          <p class="faq-a">A plain-text Markdown file defining context compression rules for AI agents. It specifies when to compress (based on context utilisation and token budgets), what to preserve (system prompt, active task, recent exchanges), what to compress or discard (brainstorming, completed work, redundant acknowledgements), and how to verify the result.</p>
+        </div>
+        <div class="faq-item">
+          <h3 class="faq-q">What does "preserve always" mean?</h3>
+          <p class="faq-a">Items in the preserve_always list are never summarized or discarded during compression — they are copied verbatim into the compressed context. This includes the system prompt, active task instructions, the last 3 conversation turns, flagged bookmarks, recent error states, and pending actions.</p>
+        </div>
+        <div class="faq-item">
+          <h3 class="faq-q">What happens if compression verification fails?</h3>
+          <p class="faq-a">The agent restores the pre-compression checkpoint, notifies the operator, and escalates to COLLAPSE.md for collapse prevention handling. Compression is rolled back rather than silently completing with data loss.</p>
+        </div>
+        <div class="faq-item">
+          <h3 class="faq-q">How does COMPRESSION.md relate to COLLAPSE.md?</h3>
+          <p class="faq-a">COMPRESSION.md is proactive — compress context before it becomes a problem. COLLAPSE.md is reactive — detect and recover when context health has already degraded. Use both together. Compression prevents collapse; collapse detection catches what compression missed.</p>
+        </div>
+        <div class="faq-item">
+          <h3 class="faq-q">Can I set different compression rules for different agent types?</h3>
+          <p class="faq-a">Yes — COMPRESSION.md supports adjustable compression_ratio_targets (light, standard, aggressive), configurable preserve_always lists, and scheduled compression intervals. Each agent project maintains its own COMPRESSION.md tuned for its specific context patterns.</p>
+        </div>
+        <div class="faq-item">
+          <h3 class="faq-q">Does COMPRESSION.md work with all AI frameworks?</h3>
+          <p class="faq-a">Yes — it is framework-agnostic. It defines the policy; your agent implementation enforces it. Works with LangChain, AutoGen, CrewAI, Claude Code, custom agents, or any AI system that can monitor its own token consumption.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta" id="acquire">
+    <div class="cta-inner">
+      <div class="cta-tag">// Domain Acquisition</div>
+      <h2 class="cta-title">Own the standard.<br>Own <span>compression.md</span></h2>
+      <p class="cta-desc">
+        This domain is available for acquisition. It is the canonical home of the COMPRESSION.md specification — the context management layer of the AI agent safety stack, essential for any long-running agent deployment.
+      </p>
+      <a href="mailto:info@compression.md?subject=Domain%20Acquisition%20Inquiry%20—%20compression.md" class="btn-primary">Inquire About Acquisition</a>
+      <p class="cta-email">Or email directly: <a href="mailto:info@compression.md">info@compression.md</a></p>
+    </div>
+  </section>
+
+  <!-- CITATION -->
+  <section class="citation-section">
+    <div class="citation-inner">
+      <div class="citation-box">
+        <strong>COMPRESSION.md is an open specification</strong> for AI agent context compression. Defines <strong>TRIGGERS</strong> (incremental compression at 75% context, full compression when token budget exceeded), <strong>STRATEGY</strong> (preserve system prompt, active task, last 3 turns, error states; compress aggressively: brainstorming, redundant info, verbose tool outputs), <strong>VERIFICATION</strong> (post-compression coherence check, max 10% information loss, rollback on failure), and <strong>AUDIT</strong> logging. Part of the AI safety and quality stack: THROTTLE → ESCALATE → FAILSAFE → KILLSWITCH → TERMINATE → ENCRYPT → ENCRYPTION → SYCOPHANCY → COMPRESSION → COLLAPSE → FAILURE → LEADERBOARD. <strong>MIT licence.</strong>
+      </div>
+    </div>
+  </section>
+
+  <!-- LAST UPDATED -->
+  <div class="last-updated">
+    <div class="last-updated-inner">
+      <div class="last-updated-label">Last Updated</div>
+      <div class="last-updated-date">11 March 2026</div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">COMPRESSION<span>.md</span></div>
+    <ul class="footer-links">
+      <li><a href="https://github.com/Compression-md/spec" target="_blank" rel="noopener">GitHub</a></li>
+      <li><a href="/llms.txt">llms.txt</a></li>
+      <li><a href="mailto:info@compression.md">Contact</a></li>
+    </ul>
+    <div class="footer-note">Open standard · MIT licence · v1.0 · 2026</div>
+  </footer>
+
+</body>
+</html>
